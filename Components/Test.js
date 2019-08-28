@@ -1,30 +1,66 @@
 import React from 'react'
-import { StyleSheet, View, Platform, Animated} from 'react-native'
+import {StyleSheet, View, Platform, Animated, Easing} from 'react-native'
 import HelloWord from "./HelloWord";
 
 class Test extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            topPosition: new Animated.Value(0)
+            topPosition: new Animated.Value(0),
+            leftPosition: new Animated.Value(0)
         }
     }
+
     componentDidMount() {
-        Animated.spring(
-            this.state.topPosition,{
-                toValue: 100,
-                speed: 4,
-                bounciness: 30
-            }
-        ).start()
+        Animated.stagger(350,[
+            Animated.parallel([
+                Animated.spring(
+                    this.state.topPosition, {
+                        toValue: 100,
+                        // tension: 8,
+                        // friction: 3,
+                        speed: 4,
+                        bounciness: 30
+                    }
+                ),
+                Animated.timing(
+                    this.state.leftPosition,
+                    {
+                        toValue: 100,
+                        duration: 1000,
+                        easing: Easing.elastic(10)
+                    }
+                )
+            ]),
+            Animated.parallel([
+                Animated.timing(
+                    this.state.topPosition,
+                    {
+                        toValue: 60,
+                        duration: 0,
+                        easing: Easing.elastic(8)
+                    }
+                ),
+                Animated.timing(
+                    this.state.leftPosition,
+                    {
+                        toValue: 0,
+                        duration: 0,
+                        easing: Easing.elastic(8)
+                    }
+                )
+            ])
+
+        ])
+        .start()
     }
 
     render() {
         return (
-            <View style={styles.main_container} >
-                <Animated.View style={[styles.animation_view, {top: this.state.topPosition}]}>
+            <View style={styles.main_container}>
+                <Animated.View style={[styles.animation_view, {top: this.state.topPosition, left: this.state.leftPosition}]}>
                 </Animated.View>
-                <HelloWord />
+                <HelloWord/>
             </View>
         )
             ;
